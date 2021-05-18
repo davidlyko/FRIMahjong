@@ -8,10 +8,17 @@ from keras.datasets import *
 from keras.losses import *
 from keras.optimizers import *
 import keras
+from keras.layers import Conv2D
+from keras.datasets import *
+from keras.losses import *
+from keras.optimizers import *
+from keras.layers import MaxPooling1D
+from keras.layers import Flatten
 
 
 images = sorted(glob.glob('C:/Users/18452/FRI/FRI_PROJECT/FRIMahjong/crack_1/*.jpg'))#Directory of the first folder
 images1 = sorted(glob.glob('C:/Users/18452/FRI/FRI_PROJECT/FRIMahjong/crack_2/*.jpg'))#Directory of the second folderimages2 = sorted(glob.glob('C:/Users/geral/crack/crack_3/*.jpg'))#Directory of the third folder
+print(images1)
 images2 = sorted(glob.glob('C:/Users/18452/FRI/FRI_PROJECT/FRIMahjong/crack_3/*.jpg'))
 images3 = sorted(glob.glob('C:/Users/18452/FRI/FRI_PROJECT/FRIMahjong/crack_4/*.jpg'))
 labels = np.zeros((len(images)+len(images1) + len(images2) + len(images3), 4)) #Used to label images in a folder. First index is the total number of pictures in the folder, and the second index is the number of folders
@@ -75,34 +82,54 @@ print()
 print(labels.shape)
 #print (np.concatenate((croppedImages,labels),axis=0))
 xTrain = croppedImages[:]
+
+print("Xtrain: ", xTrain.shape)
+
 yTrain = labels[:]
+xTest = croppedImages[:]
+yTest = labels[:]
 xTrain = xTrain.reshape(len(images)+len(images1) + len(images2) + len(images3), 700*700).astype('float32') #add after each new folder
-#xTest = croppedImages[:]
+xTest = xTest.reshape(len(images)+len(images1) + len(images2) + len(images3), 700*700).astype('float32')
+xTrain = xTrain / 255
+xTest = xTest / 255
 
-#xTrain = xTrain / 255
-#xTest = XTest / 255
-
-
+print(xTrain.shape)
 
 plt.imshow(croppedImages[0,:,:], cmap='gray')
 plt.title("Label : {}".format(labels[0,:]))
 plt.xticks([])
 plt.yticks([])
-#plt.show()
+plt.show()
 
-
+'''
 model = Sequential()
-model.add(Dense(512, activation='relu', input_dim=700*700))
 
-model.add(Dense(256, activation='relu'))
+model.add(Dense(4, activation='relu', input_dim=700*700))
+
+model.add(Dense(4, activation='relu'))
+
+model.add(Flatten())
+
+model.add(Dense(8, activation='relu'))
 
 model.add(Dense(4, activation='softmax')) #change number everytime you add another folder
+'''
 
-print (model.summary())
+model = Sequential()
 
+model.add(Dense(22, activation='relu', input_dim=700*700))
 
-model.compile(loss='categorical_crossentropy', optimizer=RMSprop(), metrics=['accuracy'])
+model.add(Dense(32, activation='relu'))
 
-history = model.fit(xTrain, yTrain, batch_size=128, epochs=1, verbose=1)
+model.add(Dense(22, activation='softmax')) #change number everytime you add another folder
+
+model.compile('adam',loss='categorical_crossentropy', metrics=['accuracy'])
+
+history = model.fit(xTrain, yTrain, batch_size=22, epochs=10, verbose=1, validation_data=(xTest, yTest))
+
+accuracy = model.evaluate(xTest, yTest, verbose=0)
+
+print('Accuracy is:', accuracy)
+
 
 cv2.waitKey(0);
