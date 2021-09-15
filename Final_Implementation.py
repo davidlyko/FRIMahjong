@@ -347,7 +347,7 @@ accuracy = model.evaluate(xTest, yTest, verbose=0)
 print ('Accuracy is:', accuracy)
 #
 #callbacks = [callback]
-#model.save("name")
+model.save("Tile_detection")
 #modelLoad = keras.models.load_model("name")
 
 #prediction = modelLoad.predict(xTest)
